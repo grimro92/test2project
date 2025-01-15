@@ -1,28 +1,13 @@
 <template>
-  <!-- <el-container class="app-layout">
-    <el-header class="header">
-      <h1 class="title">Welcome to My Page</h1>
-    </el-header>
-    <el-main class="content">
-      <IntroCard />
-      <SkillChart />
-      <Favorites />
-      <ContactForm />
-    </el-main>
-    <el-footer class="footer">
-      <p>© 2024 Your Name</p>
-    </el-footer>
-  </el-container> -->
-  <div id="appMain">
-    <router-view />
-  </div>
+  <GameView />
 </template>
 
 <script setup>
-import IntroCard from './components/IntroCard.vue';
-import SkillChart from './components/SkillChart.vue';
-import Favorites from './components/Favorites.vue';
-import ContactForm from './components/ContactForm.vue';
+// import IntroCard from './components/IntroCard.vue';
+// import SkillChart from './components/SkillChart.vue';
+// import Favorites from './components/Favorites.vue';
+// import ContactForm from './components/ContactForm.vue';
+import GameView from './components/GameView.vue';
 </script>
 
 <style scoped>
