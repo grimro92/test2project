@@ -1,11 +1,11 @@
 import { createApp } from 'vue'
-import './style.css'
+// import './style.css'
 import App from './App.vue'
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import { createI18n } from 'vue-i18n';
-import 'normalize.css/normalize.css';
+// import 'normalize.css/normalize.css';
 import router from './router/routers';
 
 const i18n = createI18n({
