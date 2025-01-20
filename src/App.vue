@@ -1,9 +1,12 @@
 <template>
-  <GameView />
+  <!-- <TestMain2 /> -->
+  <MainView />
 </template>
 
 <script setup>
-import GameView from './components/GameView.vue'
+// import TestMain2 from './components/Test2/TestMain2.vue'
+// import MainView from './components/Anomaly/MainView.vue'
+import MainView from './components/Anomaly/MainView.vue'
 </script>
 
 <style scoped>
