@@ -1,6 +1,6 @@
 <template>
     <div id="scroll-container" ref="scrollContainer">
-        <StagePanel />
+        <StagePanel :stagePanelNum=props.stagePanelNum />
         <AnomalyTrigger />
         <AnomalyPanel />
         <StageTrigger />
@@ -15,11 +15,20 @@ import AnomalyPanel from "./AnomalyPanel.vue";
 import StageTrigger from "./StageTrigger.vue";
 
 
+// ステージナンバー
+const props = defineProps({
+    stagePanelNum: Number
+})
+
+
 // フラグを定義
 const StagePanelFlg = ref(false);
 const AnomalyTriggerFlg = ref(false);
 const AnomalyPanelFlg = ref(false);
 const StageTriggerFlg = ref(false);
+
+// 異変存在フラグ
+const AnomalyExistFlg = ref(false);
 
 
 // スクロールコンテナの参照
@@ -31,7 +40,7 @@ const emit = defineEmits(["addStage", "delStage"]);
 let stagePanelObserver, anomalyTriggerObserver, anomalyPanelObserver, stageTriggerObserver;
 
 const setUpObservers = () => {
-    // 1.StagePanel用のオブザーバー
+    // 1.ステージパネル（StagePanel）用のオブザーバー
     const stagePanelOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
     stagePanelObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
@@ -43,36 +52,69 @@ const setUpObservers = () => {
     const stagePanelElement = scrollContainer.value?.querySelector(".stage-panel");
     if (stagePanelElement) stagePanelObserver.observe(stagePanelElement);
 
-    // 2.AnomalyTrigger用のオブザーバー
+
+    // 2.異変トリガ（AnomalyTrigger）用のオブザーバー
     const anomalyTriggerOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
     anomalyTriggerObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting && !AnomalyTriggerFlg.value) {
                 AnomalyTriggerFlg.value = true;
+                // 異変有無をランダムに生成(66％)
+                let ex = Math.floor(Math.random() * 3)
+                // 異変なし
+                if (ex == 0) {
+                    AnomalyExistFlg.value = false;
+                    console.log("異変なし");
+                } else {
+                    // 異変あり
+                    AnomalyExistFlg.value = true;
+                    console.log("異変あり");
+                }
             }
         });
     }, anomalyTriggerOptions);
     const anomalyTriggerElement = scrollContainer.value?.querySelector(".anomaly-trigger");
     if (anomalyTriggerElement) anomalyTriggerObserver.observe(anomalyTriggerElement);
 
-    // 3.AnomalyPanel用のオブザーバー
+
+    // 3.異変パネル（AnomalyPanel）用のオブザーバー
     const anomalyPanelOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
     anomalyPanelObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting && !AnomalyPanelFlg.value) {
+                // 異変パネルフラグをtrue
                 AnomalyPanelFlg.value = true;
+
+                // 異変存在フラグがtrueの場合、このステージナンバーをカウントアップする
+                if (AnomalyExistFlg.value) {
+                    // stagePanelNum.value++;
+                } else {
+                    // 異変存在フラグがfalseの場合、このステージナンバーを0にする
+                    // stagePanelNum.value = 0;
+                }
+
+
+
+
+
             }
         });
     }, anomalyPanelOptions);
     const anomalyPanelElement = scrollContainer.value?.querySelector(".anomaly-panel");
     if (anomalyPanelElement) anomalyPanelObserver.observe(anomalyPanelElement);
 
-    // 4.StageTrigger用のオブザーバー
+
+    // 4.ステージトリガ（StageTrigger）用のオブザーバー
     const stageTriggerOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
     stageTriggerObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting && !StageTriggerFlg.value) {
                 StageTriggerFlg.value = true;
+                // 異変ありで通過する場合
+                if(AnomalyExistFlg.value){
+                    // 次のステージをステージナンバー0で作成
+                    emit("addStage", 0);
+                }
                 emit("addStage");
             }
             if (!entry.isIntersecting && StageTriggerFlg.value && entry.boundingClientRect.bottom < 150) {
