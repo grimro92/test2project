@@ -9,12 +9,14 @@
 
 <style scoped>
 .anomaly-trigger {
-  height: 1500px;
-  border: 1px solid #ddd;
-    display: block;
-    background: #fff;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-bottom: 16px;
-    position: relative;
+  height: 1200px;
+  /* margin: 20px 0; */
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  color: white;
+  background-color: rgb(238, 144, 144);
 }
 </style>

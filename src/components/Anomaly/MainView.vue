@@ -23,16 +23,12 @@ const addStageTrigger = () => {
     // 新しいステージセットを追加
     stageNumbers.value.push(nextStageNumber);
     nextStageNumber++;
-    console.log("stageNumbers", stageNumbers.value);
-    console.log("nextStageNumber", nextStageNumber);
   }
 };
 
 const delStageTrigger = () => {
   console.log("ステージ削除トリガ");
   if (stageNumbers.value.length > 0) {
-    console.log("stageNumbers", stageNumbers.value);
-    console.log("newStageSet", nextStageNumber);
     stageNumbers.value.shift();
   }
 };

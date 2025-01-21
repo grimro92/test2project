@@ -1,17 +1,24 @@
 <template>
     <div id="scroll-container" ref="scrollContainer">
+        <StagePanel />
         <AnomalyTrigger />
+        <AnomalyPanel />
         <StageTrigger />
     </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
+import StagePanel from "./StagePanel.vue";
 import AnomalyTrigger from "./AnomalyTrigger.vue";
+import AnomalyPanel from "./AnomalyPanel.vue";
 import StageTrigger from "./StageTrigger.vue";
 
+
 // フラグを定義
+const StagePanelFlg = ref(false);
 const AnomalyTriggerFlg = ref(false);
+const AnomalyPanelFlg = ref(false);
 const StageTriggerFlg = ref(false);
 
 
@@ -24,7 +31,19 @@ const emit = defineEmits(["addStage", "delStage"]);
 let stagePanelObserver, anomalyTriggerObserver, anomalyPanelObserver, stageTriggerObserver;
 
 const setUpObservers = () => {
-    // AnomalyTrigger用のオブザーバー
+    // 1.StagePanel用のオブザーバー
+    const stagePanelOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
+    stagePanelObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting && !StagePanelFlg.value) {
+                StagePanelFlg.value = true;
+            }
+        });
+    }, stagePanelOptions);
+    const stagePanelElement = scrollContainer.value?.querySelector(".stage-panel");
+    if (stagePanelElement) stagePanelObserver.observe(stagePanelElement);
+
+    // 2.AnomalyTrigger用のオブザーバー
     const anomalyTriggerOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
     anomalyTriggerObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
@@ -33,10 +52,22 @@ const setUpObservers = () => {
             }
         });
     }, anomalyTriggerOptions);
-    const anomalyElement = scrollContainer.value?.querySelector(".anomaly-trigger");
-    if (anomalyElement) anomalyTriggerObserver.observe(anomalyElement);
+    const anomalyTriggerElement = scrollContainer.value?.querySelector(".anomaly-trigger");
+    if (anomalyTriggerElement) anomalyTriggerObserver.observe(anomalyTriggerElement);
 
-    // StageTrigger用のオブザーバー
+    // 3.AnomalyPanel用のオブザーバー
+    const anomalyPanelOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
+    anomalyPanelObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting && !AnomalyPanelFlg.value) {
+                AnomalyPanelFlg.value = true;
+            }
+        });
+    }, anomalyPanelOptions);
+    const anomalyPanelElement = scrollContainer.value?.querySelector(".anomaly-panel");
+    if (anomalyPanelElement) anomalyPanelObserver.observe(anomalyPanelElement);
+
+    // 4.StageTrigger用のオブザーバー
     const stageTriggerOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
     stageTriggerObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
@@ -49,18 +80,24 @@ const setUpObservers = () => {
             }
         });
     }, stageTriggerOptions);
-    const stageElement = scrollContainer.value?.querySelector(".stage-trigger");
-    if (stageElement) stageTriggerObserver.observe(stageElement);
+    const stageTriggerElement = scrollContainer.value?.querySelector(".stage-trigger");
+    if (stageTriggerElement) stageTriggerObserver.observe(stageTriggerElement);
 };
 
 onMounted(() => {
-        setUpObservers();
-    });
+    setUpObservers();
+});
 
 // コンポーネントの破棄時に監視を解除
 onBeforeUnmount(() => {
+    if (stagePanelObserver) {
+        stagePanelObserver.disconnect();
+    }
     if (anomalyTriggerObserver) {
         anomalyTriggerObserver.disconnect();
+    }
+    if (anomalyPanelObserver) {
+        anomalyPanelObserver.disconnect();
     }
     if (stageTriggerObserver) {
         stageTriggerObserver.disconnect();
@@ -72,8 +109,6 @@ onBeforeUnmount(() => {
 <style scoped>
 .scroll-container {
     height: 100vh;
-    /* overflow-y: auto; */
-    /* padding: 16px; */
     background-color: #f5f5f5;
     /* scrollbar-width: none; */
     /* border: 1px solid #ddd;

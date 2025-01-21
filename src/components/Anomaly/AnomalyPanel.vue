@@ -10,7 +10,7 @@
 <style scoped>
 .anomaly-panel {
   height: 1200px;
-  margin: 20px 0;
+  /* margin: 20px 0; */
   text-align: center;
   display: flex;
   justify-content: center;
