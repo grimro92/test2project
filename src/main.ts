@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia';
 // import './style.css'
 import App from './App.vue'
 import ElementPlus from 'element-plus';
@@ -6,7 +7,8 @@ import 'element-plus/dist/index.css';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import { createI18n } from 'vue-i18n';
 // import 'normalize.css/normalize.css';
-import router from './router/routers';
+// import router from './router/routers';
+
 
 const i18n = createI18n({
   legacy: false, // Composition APIを使うため
@@ -34,6 +36,7 @@ const i18n = createI18n({
 });
 
 const app = createApp(App);
+const pinia = createPinia();
 
 // アイコンコンポーネントをグローバル登録
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -42,6 +45,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 
 app.use(ElementPlus);
 app.use(i18n);
-app.use(router);
+// app.use(router);
+app.use(pinia);
 
 app.mount('#app');

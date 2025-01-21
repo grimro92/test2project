@@ -1,24 +1,25 @@
 <template>
     <div id="scroll-container" ref="scrollContainer">
-        <StagePanel :stagePanelNum=props.stagePanelNum />
+        <StagePanel :stagePanelNum=spnStore.stagePanelNum />
         <AnomalyTrigger />
         <AnomalyPanel />
         <StageTrigger />
     </div>
 </template>
 
-<script lang="ts" setup>
+<script setup lang="ts" >
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import StagePanel from "./StagePanel.vue";
 import AnomalyTrigger from "./AnomalyTrigger.vue";
 import AnomalyPanel from "./AnomalyPanel.vue";
 import StageTrigger from "./StageTrigger.vue";
+import { useStagePanelNumState } from '../stores/stagePanelNum';
 
+// pinia
+const spnStore = useStagePanelNumState();
 
-// ステージナンバー
-const props = defineProps({
-    stagePanelNum: Number
-})
+// このステージナンバー
+const thisSPN = ref(spnStore.stagePanelNum);
 
 
 // フラグを定義
@@ -87,16 +88,11 @@ const setUpObservers = () => {
 
                 // 異変存在フラグがtrueの場合、このステージナンバーをカウントアップする
                 if (AnomalyExistFlg.value) {
-                    // stagePanelNum.value++;
+                    spnStore.increment();
                 } else {
                     // 異変存在フラグがfalseの場合、このステージナンバーを0にする
-                    // stagePanelNum.value = 0;
+                    spnStore.reset();
                 }
-
-
-
-
-
             }
         });
     }, anomalyPanelOptions);
@@ -113,9 +109,14 @@ const setUpObservers = () => {
                 // 異変ありで通過する場合
                 if(AnomalyExistFlg.value){
                     // 次のステージをステージナンバー0で作成
-                    emit("addStage", 0);
+                    spnStore.reset();
+                    emit("addStage");
+                } else {
+                    // 異変無しで通過する場合、ステージナンバーをインクリメントして作成
+                    spnStore.add();
+                    emit("addStage");
                 }
-                emit("addStage");
+
             }
             if (!entry.isIntersecting && StageTriggerFlg.value && entry.boundingClientRect.bottom < 150) {
                 emit("delStage");
@@ -127,6 +128,7 @@ const setUpObservers = () => {
 };
 
 onMounted(() => {
+    spnStore.init();
     setUpObservers();
 });
 
