@@ -1,14 +1,12 @@
 <template>
     <div id="scroll-container" ref="scrollContainer">
-        <!-- <div v-for="set in stageSets" :key="set.id"> -->
         <AnomalyTrigger />
         <StageTrigger />
     </div>
-    <!-- </div> -->
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
 import AnomalyTrigger from "./AnomalyTrigger.vue";
 import StageTrigger from "./StageTrigger.vue";
 
@@ -20,77 +18,53 @@ const StageTriggerFlg = ref(false);
 // スクロールコンテナの参照
 const scrollContainer = ref<HTMLDivElement | null>(null);
 
-// 初回通知を記録するフラグ
-const hasAnomalyTriggered = ref(false);
-const hasStageTriggered = ref(false);
-console.log(hasAnomalyTriggered.value);
-console.log(hasStageTriggered.value);
-
 // ステージトリガーイベントを親に通知
-const emit = defineEmits<{
-    (event: "add-stage"): void;
-    (event: "del-stage"): void;
-}>();
+const emit = defineEmits(["addStage", "delStage"]);
 
-onMounted(() => {
+let stagePanelObserver, anomalyTriggerObserver, anomalyPanelObserver, stageTriggerObserver;
+
+const setUpObservers = () => {
     // AnomalyTrigger用のオブザーバー
-    const anomalyObserver = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                // console.log("AnomalyTrigger - entry:", entry); // 詳細な情報をログ出力
-                if (!hasAnomalyTriggered.value) {
-                    hasAnomalyTriggered.value = true;
-                    console.log(hasAnomalyTriggered.value);
-                }else{
-                if (entry.isIntersecting && !AnomalyTriggerFlg.value) {
-                    AnomalyTriggerFlg.value = true;
-                    console.log("AnomalyTriggerFlg:", AnomalyTriggerFlg.value);
-                }}
-            });
-        },
-        {
-            root: scrollContainer.value,  // スクロールコンテナを設定
-            threshold: 0.1,  // 要素が視界に一部でも入るとトリガー
-        }
-    );
+    const anomalyTriggerOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
+    anomalyTriggerObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting && !AnomalyTriggerFlg.value) {
+                AnomalyTriggerFlg.value = true;
+            }
+        });
+    }, anomalyTriggerOptions);
+    const anomalyElement = scrollContainer.value?.querySelector(".anomaly-trigger");
+    if (anomalyElement) anomalyTriggerObserver.observe(anomalyElement);
 
     // StageTrigger用のオブザーバー
-    const stageObserver = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-                // console.log("StageTrigger - entry:", entry); // 詳細な情報をログ出力
-                if (!hasStageTriggered.value) {
-                    hasStageTriggered.value = true;
-                    console.log(hasStageTriggered.value);
-                }else{
-                if (entry.isIntersecting && !StageTriggerFlg.value) {
-                    StageTriggerFlg.value = true;
-                    emit("add-stage");
-                    console.log("StageTriggerFlg: add-stage triggered");
-                } else if (!entry.isIntersecting && StageTriggerFlg.value) {
-                    StageTriggerFlg.value = false;
-                    emit("del-stage");
-                    console.log("StageTriggerFlg: del-stage triggered");
-                }}
-            });
-        },
-        {
-            root: scrollContainer.value,  // スクロールコンテナを設定
-            threshold: 0.1,  // 要素が視界に一部でも入るとトリガー
-        }
-    );
-    console.log(scrollContainer.value); 
-    const anomalyElement = scrollContainer.value?.querySelector(".anomaly-trigger");
+    const stageTriggerOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
+    stageTriggerObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting && !StageTriggerFlg.value) {
+                StageTriggerFlg.value = true;
+                emit("addStage");
+            }
+            if (!entry.isIntersecting && StageTriggerFlg.value && entry.boundingClientRect.bottom < 150) {
+                emit("delStage");
+            }
+        });
+    }, stageTriggerOptions);
     const stageElement = scrollContainer.value?.querySelector(".stage-trigger");
+    if (stageElement) stageTriggerObserver.observe(stageElement);
+};
 
-    if (anomalyElement) anomalyObserver.observe(anomalyElement);
-    if (stageElement) stageObserver.observe(stageElement);
-
-    // コンポーネントの破棄時に監視を解除
-    onUnmounted(() => {
-        anomalyObserver.disconnect();
-        stageObserver.disconnect();
+onMounted(() => {
+        setUpObservers();
     });
+
+// コンポーネントの破棄時に監視を解除
+onBeforeUnmount(() => {
+    if (anomalyTriggerObserver) {
+        anomalyTriggerObserver.disconnect();
+    }
+    if (stageTriggerObserver) {
+        stageTriggerObserver.disconnect();
+    }
 });
 </script>
 
@@ -102,12 +76,12 @@ onMounted(() => {
     /* padding: 16px; */
     background-color: #f5f5f5;
     /* scrollbar-width: none; */
-    border: 1px solid #ddd;
+    /* border: 1px solid #ddd;
     display: block;
     background: #fff;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-bottom: 16px;
-    position: relative;
+    position: relative; */
 }
 
 /* #scroll-container::-webkit-scrollbar {

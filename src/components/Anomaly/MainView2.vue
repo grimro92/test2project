@@ -1,7 +1,7 @@
 <template>
   <div class="main-view" ref="mainView">
-    <div v-for="set in stageSets" :key="set.id">
-      <StageSet  @add-stage="addStageTrigger" @del-stage="delStageTrigger"/>
+    <div v-for="(stageNum, index) in stageNumbers" :key="stageNum" class="stage-container">
+      <StageSet @add-stage="addStageTrigger" @del-stage="delStageTrigger" />
     </div>
 
   </div>
@@ -12,21 +12,30 @@ import { ref } from "vue";
 import StageSet from "./StageSet.vue";
 
 // 動的に管理するステージセット
-const stageSets = ref([{ id: 1 }]);
-const newStageSet = ref();
+const stageNumbers = ref([1]);
+let nextStageNumber = 2;
+
 
 // ステージトリガーを受け取ったときの処理
 const addStageTrigger = () => {
   console.log("ステージ追加トリガ");
-  // 新しいステージセットを追加
-  newStageSet.value = { id: stageSets.value.length + 1 };
-  stageSets.value.push(newStageSet.value);
+  if (stageNumbers.value.length < 2) {
+    // 新しいステージセットを追加
+    stageNumbers.value.push(nextStageNumber);
+    nextStageNumber++;
+    console.log("stageNumbers", stageNumbers.value);
+    console.log("nextStageNumber", nextStageNumber);
+  }
 };
 
 const delStageTrigger = () => {
   console.log("ステージ削除トリガ");
-  stageSets.value.splice(newStageSet.value, 1);
-}
+  if (stageNumbers.value.length > 0) {
+    console.log("stageNumbers", stageNumbers.value);
+    console.log("newStageSet", nextStageNumber);
+    stageNumbers.value.shift();
+  }
+};
 
 </script>
 
