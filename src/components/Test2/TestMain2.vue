@@ -1,12 +1,12 @@
 <template>
   <div>
     <!-- スクロール情報を常に表示 -->
-    <div class="scroll-info">
+    <!-- <div class="scroll-info">
       <p>scrollTop: {{ scrollTop }}</p>
       <p>scrollHeight: {{ scrollHeight }}</p>
       <p>clientHeight: {{ clientHeight }}</p>
       <p>scrollBottoms: {{ scrollBottoms }}</p>
-    </div>
+    </div> -->
 
     <div id="scroll-container" @scroll="handleScroll" ref="scrollContainer">
       <div
@@ -20,11 +20,11 @@
     </div>
     
     <!-- 各コンポーネントの rect.top と rect.bottom を表示 -->
-    <div class="rect-info">
+    <!-- <div class="rect-info">
       <p v-for="(rect, index) in rects" :key="index">
         Test {{ index + 1 }} - Top: {{ rect.top }}px, Bottom: {{ rect.bottom }}px
       </p>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -110,14 +110,14 @@ onMounted(() => {
   overflow-y: auto;
   padding: 16px;
   background-color: #f5f5f5;
-  box-sizing: border-box;
+  /* box-sizing: border-box;
   scrollbar-width: none;
-  -ms-overflow-style: none;
+  -ms-overflow-style: none; */
 }
 
-#scroll-container::-webkit-scrollbar {
+/* #scroll-container::-webkit-scrollbar {
   display: none;
-}
+} */
 
 .test-container {
   margin-bottom: 16px;
