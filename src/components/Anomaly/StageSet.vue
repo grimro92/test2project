@@ -18,18 +18,18 @@ import { useStagePanelNumState } from '../stores/stagePanelNum';
 // pinia
 const spnStore = useStagePanelNumState();
 
-// このステージナンバー
-const thisSPN = ref(spnStore.stagePanelNum);
-
 
 // フラグを定義
-const StagePanelFlg = ref(false);
+// ステージパネルフラグ
+const StagePanelFlg = ref(false);  // いる？
+// 異変トリガフラグ
 const AnomalyTriggerFlg = ref(false);
-const AnomalyPanelFlg = ref(false);
-const StageTriggerFlg = ref(false);
-
 // 異変存在フラグ
 const AnomalyExistFlg = ref(false);
+// 異変パネルフラグ
+const AnomalyPanelFlg = ref(false);
+// ステージトリガフラグ
+const StageTriggerFlg = ref(false);
 
 
 // スクロールコンテナの参照
@@ -45,8 +45,19 @@ const setUpObservers = () => {
     const stagePanelOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
     stagePanelObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-            if (entry.isIntersecting && !StagePanelFlg.value) {
-                StagePanelFlg.value = true;
+            // if (entry.isIntersecting && !StagePanelFlg.value) {
+            //     StagePanelFlg.value = true;
+            // }
+            if (entry.isIntersecting
+                // && StagePanelFlg.value
+                && AnomalyTriggerFlg.value
+                && AnomalyPanelFlg.value
+            ) {
+                AnomalyTriggerFlg.value = false;
+                AnomalyExistFlg.value = false;
+                AnomalyPanelFlg.value = false;
+                StageTriggerFlg.value = false;
+                spnStore.init();
             }
         });
     }, stagePanelOptions);
@@ -62,6 +73,7 @@ const setUpObservers = () => {
                 AnomalyTriggerFlg.value = true;
                 // 異変有無をランダムに生成(66％)
                 let ex = Math.floor(Math.random() * 3)
+                // let ex = 0
                 // 異変なし
                 if (ex == 0) {
                     AnomalyExistFlg.value = false;
@@ -86,11 +98,11 @@ const setUpObservers = () => {
                 // 異変パネルフラグをtrue
                 AnomalyPanelFlg.value = true;
 
-                // 異変存在フラグがtrueの場合、このステージナンバーをカウントアップする
+                // 異変ありの場合、このステージナンバーをカウントアップする
                 if (AnomalyExistFlg.value) {
                     spnStore.increment();
                 } else {
-                    // 異変存在フラグがfalseの場合、このステージナンバーを0にする
+                    // 異変なしの場合、このステージナンバーを0にする
                     spnStore.reset();
                 }
             }
@@ -114,6 +126,7 @@ const setUpObservers = () => {
                 } else {
                     // 異変無しで通過する場合、ステージナンバーをインクリメントして作成
                     spnStore.add();
+                    spnStore.addIncrement();
                     emit("addStage");
                 }
 

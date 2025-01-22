@@ -13,12 +13,16 @@ export const useStagePanelNumState = defineStore('main', {
 
   actions: {
     init() {
-      this.crtStagePanelNum = this.crtStagePanelNum;
+      console.log("init開始");
+      this.crtStagePanelNum = this.stagePanelNum;
     },
     increment() {
       this.stagePanelNum++;
     },
     add() {
+      this.stagePanelNum = this.crtStagePanelNum;
+    },
+    addIncrement() {
       this.stagePanelNum = this.crtStagePanelNum + 1;
     },
     reset() {
