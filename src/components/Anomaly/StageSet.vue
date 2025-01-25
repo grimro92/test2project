@@ -2,7 +2,7 @@
     <div id="scroll-container" ref="scrollContainer">
         <StagePanel :stagePanelNum=spnStore.stagePanelNum />
         <AnomalyTrigger />
-        <AnomalyPanel />
+        <AnomalyPanel :anomalyExistFlg="AnomalyExistFlg" />
         <StageTrigger />
     </div>
 </template>
