@@ -9,7 +9,7 @@
 
 <style scoped>
 .stage-trigger {
-  height: 1200px;
+  height: 1500px;
   /* margin: 20px 0; */
   text-align: center;
   display: flex;

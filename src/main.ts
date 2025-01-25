@@ -8,6 +8,13 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import { createI18n } from 'vue-i18n';
 // import 'normalize.css/normalize.css';
 // import router from './router/routers';
+import 'vuetify/styles'
+import VueVirtualScroller from 'vue3-virtual-scroller'
+import "vue-virtual-scroller/dist/vue-virtual-scroller.css";
+import 'vue3-virtual-scroller/dist/vue3-virtual-scroller.css'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
 
 
 const i18n = createI18n({
@@ -38,6 +45,11 @@ const i18n = createI18n({
 const app = createApp(App);
 const pinia = createPinia();
 
+const vuetify = createVuetify({
+  components,
+  directives,
+})
+
 // アイコンコンポーネントをグローバル登録
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
@@ -47,5 +59,7 @@ app.use(ElementPlus);
 app.use(i18n);
 // app.use(router);
 app.use(pinia);
+app.use(vuetify);
+app.use(VueVirtualScroller);
 
 app.mount('#app');

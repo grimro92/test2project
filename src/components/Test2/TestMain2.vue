@@ -73,7 +73,8 @@ const handleScroll = () => {
 
     // コンポーネントが完全に画面外（上方向）に出た場合
     if (rect.bottom < 0) {
-      components.value.splice(index, 1); // 対応するコンポーネントを削除
+      // components.value.splice(index, 1); // 対応するコンポーネントを削除
+      scrollContainer.value.scrollTop = 0;
     }
   });
 
@@ -85,9 +86,9 @@ const handleScroll = () => {
   }
 
   // 4. 上方向スクロールを防止
-  if (scrollTop.value <= 0) {
-    container.scrollTop = 1;
-  }
+  // if (scrollTop.value <= 0) {
+  //   container.scrollTop = 1;
+  // }
 };
 
 onMounted(() => {

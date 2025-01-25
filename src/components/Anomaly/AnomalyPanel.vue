@@ -1,190 +1,114 @@
 <template>
-  <div class="anomaly-panel">
-    <div class="blank"></div>
+  <v-container fluid class="anomaly-panel">
+    <!-- 上部の余白 -->
+    <v-spacer class="blank" />
 
-    <div class="intro-container">
+    <!-- プロフィールセクション -->
+    <v-container class="intro-container" fluid>
+      <v-row align="center" justify="space-evenly">
+        <!-- プロフィール画像 -->
+        <v-col cols="12" md="4">
+          <div class="intro-picture">
+            <picture v-if="props.anomalyExistFlg">
+              <source :srcset="kadonoWebp" type="image/webp" />
+              <img :src="kadonoJpg" alt="kadono" />
+            </picture>
+            <picture v-else>
+              <source :srcset="kondoWebp" type="image/webp" />
+              <img :src="kondoJpg" alt="kondo" />
+            </picture>
+          </div>
+        </v-col>
 
-      <div class="intro-picture">
+        <!-- プロフィール説明 -->
+        <v-col cols="12" md="6">
+          <div class="intro-explanation">
+            <p>こんにちは！私は近藤春菜です。</p>
+            <p>東京都出身の41歳です。</p>
+            <p>ハリセンボンというコンビで、相方は箕輪はるかです。</p>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
 
-        <div v-if="props.anomalyExistFlg">
-          <picture>
-            <source :srcset="kadonoWebp" type="image/webp" />
-            <img :src="kadonoJpg" alt="kadono" />
-          </picture>
-        </div>
-        <div v-else>
-          <picture>
-            <source :srcset="kondoWebp" type="image/webp" />
-            <img :src="kondoJpg" alt="kondo" />
-          </picture>
-        </div>
+    <!-- イメージセクション -->
+    <v-container class="image-container" fluid>
+      <v-row align="center" justify="center">
 
-      </div>
+        <!-- イメージ説明 -->
+        <v-col cols="12" md="6">
+          <div class="image-explanation">
+            <h2>私はかにです！！！！</h2>
+          </div>
+        </v-col>
 
-      <div class="intro-explanation">
-        <p>こんにちは！私は近藤春菜です。</p>
-        <p>東京都出身の41歳です。</p>
-        <p>ハリセンボンというコンビで、相方は 箕輪はるかです。</p>
-      </div>
+        <!-- イメージ画像 -->
+        <v-col cols="12" md="4">
+          <div class="image-picture">
+            <picture v-if="props.anomalyExistFlg">
+              <source :srcset="uniWebp" type="image/webp" />
+              <img :src="uniJpg" alt="uni" />
+            </picture>
+            <picture v-else>
+              <source :srcset="kaniWebp" type="image/webp" />
+              <img :src="kaniJpg" alt="kani" />
+            </picture>
+          </div>
+        </v-col>
+      </v-row>
+    </v-container>
 
-    </div>
-
-    <div class="image-container">
-
-      <div class="image-picture">
-        <div v-if="props.anomalyExistFlg">
-          <picture>
-            <source :srcset="uniWebp" type="image/webp" />
-            <img :src="uniJpg" alt="uni" />
-          </picture>
-        </div>
-        <div v-else>
-          <picture>
-            <source :srcset="kaniWebp" type="image/webp" />
-            <img :src="kaniJpg" alt="kani" />
-          </picture>
-        </div>
-      </div>
-
-      <div class="image-ex">
-        <h2>私はかにです！！！！</h2>
-      </div>
-      
-    </div>
-    <div class="blank"></div>
-  </div>
+    <!-- 下部の余白 -->
+    <v-spacer class="blank" />
+  </v-container>
 </template>
 
 <script setup>
-import uniJpg from '@/assets/Anomaly/jpg/uni.jpg';
-import uniWebp from '@/assets/Anomaly/webp/uni.webp';
-import kaniJpg from '@/assets/Anomaly/jpg/kani.jpg';
-import kaniWebp from '@/assets/Anomaly/webp/kani.webp';
-import kondoJpg from '@/assets/Anomaly/jpg/kondo.jpg';
-import kondoWebp from '@/assets/Anomaly/webp/kondo.webp';
-import kadonoJpg from '@/assets/Anomaly/jpg/kadono.jpg';
-import kadonoWebp from '@/assets/Anomaly/webp/kadono.webp';
+import { ref } from "vue";
 
+// 画像ファイルのインポート
+import uniJpg from "@/assets/Anomaly/jpg/uni.jpg";
+import uniWebp from "@/assets/Anomaly/webp/uni.webp";
+import kaniJpg from "@/assets/Anomaly/jpg/kani.jpg";
+import kaniWebp from "@/assets/Anomaly/webp/kani.webp";
+import kondoJpg from "@/assets/Anomaly/jpg/kondo.jpg";
+import kondoWebp from "@/assets/Anomaly/webp/kondo.webp";
+import kadonoJpg from "@/assets/Anomaly/jpg/kadono.jpg";
+import kadonoWebp from "@/assets/Anomaly/webp/kadono.webp";
 
 const props = defineProps({
-  anomalyExistFlg: Boolean
-})
-
-
+  anomalyExistFlg: Boolean,
+});
 </script>
 
 <style scoped>
-.blank{
-  height: 500px;
-}
-
 .anomaly-panel {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  /* background-color: #ff0000; */
+  background-color: #f4f4f4;
 }
 
-.intro-container {
-  display: flex;
-  /* justify-content: center; */
-  align-items: center;
-  justify-content: start;
-  height: 1080px;
-  width: 100%;
-  background: rgb(0, 255, 85);
-  /* border-radius: 8px; */
-  /* text-align: center; */
+.blank {
+  height: 50px;
 }
 
-.intro-picture {
-  width: 540px;
-  height: 540px;
-  padding: 5px;
-}
-
-.intro-picture picture {
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  max-height: 540px;
-}
-
-.intro-picture picture source {
-  width: 100%;
-  height: auto;
-}
-
-.intro-picture picture img {
-  width: 100%;
-  height: auto;
-}
-
-.intro-explanation {
-  display: flex;
-  flex-direction: column;
-  align-content: start;
-  padding: 5px;
-}
-
-.intro-explanation p {
-  margin: 5px;
-  font-size: 20px;
-}
-
+.intro-container,
 .image-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  /* justify-content:start; */
-  height: 1080px;
-  width: 100%;
-  background: rgb(0, 255, 85);
-}
-
-.image-picture{
-  width: 540px;
-  height: 540px;
-  padding: 5px;
-}
-
-.image-picture picture source {
-  width: 100%;
-  height: auto;
-}
-
-.image-picture picture img {
-  width: 100%;
-  height: auto;
-}
-
-/* .intro-container h1 {
-  font-size: 24px;
-  color: #333;
-} */
-
-/* .intro-container p {
-  font-size: 16px;
-  color: #666;
-} */
-
-/* .intro-container ul {
-  list-style: none;
-  padding: 0;
-  margin: 10px 0;
-} */
-
-/* .intro-container ul li {
-  font-size: 14px;
-  color: #444;
-  margin-bottom: 5px;
-} */
-
-/* picture img {
-  max-width: 100%;
-  height: auto;
+  padding: 20px;
+  background-color: #e8f5e9;
   border-radius: 8px;
-} */
+  margin-bottom: 20px;
+}
+
+.intro-picture img,
+.image-picture img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 12px;
+}
+
+.intro-explanation,
+.image-explanation {
+  text-align: left;
+  font-size: 1.2rem;
+}
 </style>
