@@ -1,13 +1,21 @@
 <template>
+    <div class="scroll-info">
+        <p>ステージナンバー: {{ spnStore.stagePanelNum }}</p>
+        <p>ステージパネルフラグ: {{ StagePanelFlg }}</p>
+        <p>異変トリガフラグ: {{ AnomalyTriggerFlg }}</p>
+        <p>異変存在フラグ: {{ AnomalyExistFlg }}</p>
+        <p>異変パネルフラグ: {{ AnomalyPanelFlg }}</p>
+        <p>ステージトリガフラグ: {{ StageTriggerFlg }}</p>
+    </div>
     <div id="scroll-container" ref="scrollContainer">
         <StagePanel :stagePanelNum=spnStore.stagePanelNum />
         <AnomalyTrigger />
-        <AnomalyPanel />
+        <AnomalyPanel :anomalyExistFlg="AnomalyExistFlg" />
         <StageTrigger />
     </div>
 </template>
 
-<script setup lang="ts" >
+<script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import StagePanel from "./StagePanel.vue";
 import AnomalyTrigger from "./AnomalyTrigger.vue";
@@ -35,24 +43,23 @@ const StageTriggerFlg = ref(false);
 // スクロールコンテナの参照
 const scrollContainer = ref<HTMLDivElement | null>(null);
 
-// ステージトリガーイベントを親に通知
-const emit = defineEmits(["addStage", "delStage"]);
-
-let stagePanelObserver, anomalyTriggerObserver, anomalyPanelObserver, stageTriggerObserver;
+let stagePanelObserver: IntersectionObserver, anomalyTriggerObserver: IntersectionObserver, anomalyPanelObserver: IntersectionObserver, stageTriggerObserver: IntersectionObserver;
 
 const setUpObservers = () => {
     // 1.ステージパネル（StagePanel）用のオブザーバー
     const stagePanelOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
     stagePanelObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-            // if (entry.isIntersecting && !StagePanelFlg.value) {
-            //     StagePanelFlg.value = true;
-            // }
+            if (entry.isIntersecting && !StagePanelFlg.value) {
+                StagePanelFlg.value = true;
+                console.log("ステージパネル1");
+            }
             if (entry.isIntersecting
-                // && StagePanelFlg.value
+                && StagePanelFlg.value
                 && AnomalyTriggerFlg.value
                 && AnomalyPanelFlg.value
             ) {
+                console.log("ステージパネル2");
                 AnomalyTriggerFlg.value = false;
                 AnomalyExistFlg.value = false;
                 AnomalyPanelFlg.value = false;
@@ -70,6 +77,7 @@ const setUpObservers = () => {
     anomalyTriggerObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting && !AnomalyTriggerFlg.value) {
+                console.log("異変トリガ");
                 AnomalyTriggerFlg.value = true;
                 // 異変有無をランダムに生成(66％)
                 let ex = Math.floor(Math.random() * 3)
@@ -95,6 +103,7 @@ const setUpObservers = () => {
     anomalyPanelObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting && !AnomalyPanelFlg.value) {
+                console.log("異変パネル");
                 // 異変パネルフラグをtrue
                 AnomalyPanelFlg.value = true;
 
@@ -117,22 +126,25 @@ const setUpObservers = () => {
     stageTriggerObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting && !StageTriggerFlg.value) {
+                console.log("ステージトリガ");
                 StageTriggerFlg.value = true;
                 // 異変ありで通過する場合
-                if(AnomalyExistFlg.value){
+                if (AnomalyExistFlg.value) {
                     // 次のステージをステージナンバー0で作成
                     spnStore.reset();
-                    emit("addStage");
+
+                    // スクロール(画面)トップに戻る
+                    // window.scrollTo(0, 0);
+                    scrollContainer.value.scrollIntoView();
                 } else {
                     // 異変無しで通過する場合、ステージナンバーをインクリメントして作成
                     spnStore.add();
                     spnStore.addIncrement();
-                    emit("addStage");
-                }
 
-            }
-            if (!entry.isIntersecting && StageTriggerFlg.value && entry.boundingClientRect.bottom < 150) {
-                emit("delStage");
+                    // スクロール(画面)トップに戻る
+                    // window.scrollTo(0, 0);
+                    scrollContainer.value.scrollIntoView();
+                }
             }
         });
     }, stageTriggerOptions);
@@ -179,4 +191,16 @@ onBeforeUnmount(() => {
 /* #scroll-container::-webkit-scrollbar {
     display: none;
 } */
+
+.scroll-info {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 8px;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    font-family: Arial, sans-serif;
+}
 </style>

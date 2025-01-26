@@ -1,43 +1,12 @@
 <template>
   <div class="main-view" ref="mainView">
-    <div v-for="(stageNum, index) in stageNumbers" :key="stageNum" class="stage-container">
-      <StageSet :stagePanelNum="crtSPN" @add-stage="addStageTrigger" @del-stage="delStageTrigger" />
-    </div>
-
+    <StageSet />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref } from "vue";
 import StageSet from "./StageSet.vue";
-
-// 動的に管理するステージセット
-const stageNumbers = ref([1]);
-let nextStageNumber = 2;
-
-// 現在のステージのステージパネルナンバー
-const crtSPN = ref(0);
-
-// 新しいステージのステージパネルナンバー
-const newSPN = ref(0);
-
-
-// ステージトリガーを受け取ったときの処理
-const addStageTrigger = (stagePanelNumber) => {
-  console.log("ステージ追加トリガ");
-  if (stageNumbers.value.length < 2) {
-    // 新しいステージセットを追加
-    stageNumbers.value.push(nextStageNumber);
-    nextStageNumber++;
-  }
-};
-
-const delStageTrigger = () => {
-  console.log("ステージ削除トリガ");
-  if (stageNumbers.value.length > 0) {
-    stageNumbers.value.shift();
-  }
-};
 
 </script>
 

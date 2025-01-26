@@ -8,6 +8,10 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import { createI18n } from 'vue-i18n';
 // import 'normalize.css/normalize.css';
 // import router from './router/routers';
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
 
 
 const i18n = createI18n({
@@ -43,9 +47,15 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component);
 }
 
+const vuetify = createVuetify({
+  components,
+  directives,
+})
+
 app.use(ElementPlus);
 app.use(i18n);
 // app.use(router);
 app.use(pinia);
+app.use(vuetify);
 
 app.mount('#app');
