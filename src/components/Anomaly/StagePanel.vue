@@ -16,7 +16,7 @@
 
 <style scoped>
 .stage-panel {
-  height: 1500px;
+  height: 1200px;
   /* margin: 20px 0; */
   text-align: center;
   display: flex;

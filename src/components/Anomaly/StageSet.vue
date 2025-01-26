@@ -1,21 +1,13 @@
 <template>
-    <div class="debug-info">
-        <p>ステージナンバー: {{ spnStore.stagePanelNum }}</p>
-    </div>
-
-
-
     <div id="scroll-container" ref="scrollContainer">
-        <!-- <div class="spacer"></div> -->
         <StagePanel :stagePanelNum=spnStore.stagePanelNum />
         <AnomalyTrigger />
-        <AnomalyPanel :anomalyExistFlg="AnomalyExistFlg" />
+        <AnomalyPanel />
         <StageTrigger />
-        <!-- <div class="spacer"></div> -->
     </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" >
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import StagePanel from "./StagePanel.vue";
 import AnomalyTrigger from "./AnomalyTrigger.vue";
@@ -25,8 +17,6 @@ import { useStagePanelNumState } from '../stores/stagePanelNum';
 
 // pinia
 const spnStore = useStagePanelNumState();
-
-const containerHeight = ref(0);
 
 
 // フラグを定義
@@ -55,21 +45,11 @@ const setUpObservers = () => {
     const stagePanelOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
     stagePanelObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
-            if (entry.isIntersecting && !StagePanelFlg.value && spnStore.testDelFlg) {
-                StagePanelFlg.value = true;
-                spnStore.testDel(); // falseにする
-                emit("delStage"); // ステージ削除
-
-                // スクロール位置をリセット
-                scrollContainer.value?.scrollTo({
-                    top: 0,
-                    behavior: "smooth", // スムーズにスクロール
-                });
-                console.log("1:", entry.boundingClientRect.top);
-            }
-
+            // if (entry.isIntersecting && !StagePanelFlg.value) {
+            //     StagePanelFlg.value = true;
+            // }
             if (entry.isIntersecting
-                && StagePanelFlg.value
+                // && StagePanelFlg.value
                 && AnomalyTriggerFlg.value
                 && AnomalyPanelFlg.value
             ) {
@@ -133,14 +113,13 @@ const setUpObservers = () => {
 
 
     // 4.ステージトリガ（StageTrigger）用のオブザーバー
-    const stageTriggerOptions = { root: null, rootMargin: "0px", threshold: 0 };
+    const stageTriggerOptions = { root: null, rootMargin: "0px", threshold: 0.1 };
     stageTriggerObserver = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting && !StageTriggerFlg.value) {
                 StageTriggerFlg.value = true;
-                spnStore.testDel(); // trueにする
                 // 異変ありで通過する場合
-                if (AnomalyExistFlg.value) {
+                if(AnomalyExistFlg.value){
                     // 次のステージをステージナンバー0で作成
                     spnStore.reset();
                     emit("addStage");
@@ -152,15 +131,9 @@ const setUpObservers = () => {
                 }
 
             }
-            //     if (!entry.isIntersecting && StageTriggerFlg.value) {
-            //     const thresholdHeight = containerHeight.value * 0.05; // 高さの 5% を閾値に設定
-            //     console.log("2:", thresholdHeight);
-            //     const isCompletelyOutOfView = entry.boundingClientRect.bottom < thresholdHeight; // 完全に上に消えた
-            //     if (isCompletelyOutOfView) {
-            //         StageTriggerFlg.value = false; // フラグをリセット
-            //         emit("delStage"); // ステージ削除
-            //     }
-            // }
+            if (!entry.isIntersecting && StageTriggerFlg.value && entry.boundingClientRect.bottom < 150) {
+                emit("delStage");
+            }
         });
     }, stageTriggerOptions);
     const stageTriggerElement = scrollContainer.value?.querySelector(".stage-trigger");
@@ -168,7 +141,6 @@ const setUpObservers = () => {
 };
 
 onMounted(() => {
-    containerHeight.value = scrollContainer.value?.clientHeight;
     spnStore.init();
     setUpObservers();
 });
@@ -207,20 +179,4 @@ onBeforeUnmount(() => {
 /* #scroll-container::-webkit-scrollbar {
     display: none;
 } */
-
-.debug-info {
-    position: fixed;
-    top: 60px;
-    right: 10px;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 8px;
-    border-radius: 4px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    z-index: 1000;
-    font-family: Arial, sans-serif;
-}
-
-.spacer {
-    height: 1500px;
-}
 </style>

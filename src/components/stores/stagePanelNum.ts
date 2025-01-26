@@ -3,14 +3,12 @@ import { defineStore } from 'pinia';
 interface StagePanelNumState {
   stagePanelNum: number;
   crtStagePanelNum: number;
-  testDelFlg: boolean;
 }
 
 export const useStagePanelNumState = defineStore('main', {
   state: ():StagePanelNumState => ({
     stagePanelNum: 0,
     crtStagePanelNum: 0,
-    testDelFlg: false,
   }),
 
   actions: {
@@ -29,9 +27,6 @@ export const useStagePanelNumState = defineStore('main', {
     },
     reset() {
       this.stagePanelNum = 0;
-    },
-    testDel(){
-      this.testDelFlg = !this.testDelFlg;
     },
   },
 });
