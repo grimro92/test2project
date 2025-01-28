@@ -6,11 +6,15 @@
         <p>異変存在フラグ: {{ AnomalyExistFlg }}</p>
         <p>異変パネルフラグ: {{ AnomalyPanelFlg }}</p>
         <p>ステージトリガフラグ: {{ StageTriggerFlg }}</p>
+        <p>タッチ中:{{ isTouching }}</p>
+        <p>スクリーンの高さ:{{ screenHeight }}</p>
     </div>
     <div id="scroll-container" ref="scrollContainer">
+        <!-- <div class="blank-container" :style="{ height: screenHeight + 'px' }"></div> -->
         <StagePanel :stagePanelNum=spnStore.stagePanelNum />
         <AnomalyTrigger />
         <AnomalyPanel :anomalyExistFlg="AnomalyExistFlg" />
+        <!-- <div class="blank-container" :style="{ height: screenHeight + 'px' }"></div> -->
         <StageTrigger />
     </div>
 </template>
@@ -26,10 +30,13 @@ import { useStagePanelNumState } from '../stores/stagePanelNum';
 // pinia
 const spnStore = useStagePanelNumState();
 
+const blankContainer = ref<HTMLDivElement | null>(null);
+const screenHeight = ref();
+
 
 // フラグを定義
 // ステージパネルフラグ
-const StagePanelFlg = ref(false);  // いる？
+const StagePanelFlg = ref(false);
 // 異変トリガフラグ
 const AnomalyTriggerFlg = ref(false);
 // 異変存在フラグ
@@ -42,6 +49,38 @@ const StageTriggerFlg = ref(false);
 
 // スクロールコンテナの参照
 const scrollContainer = ref<HTMLDivElement | null>(null);
+
+// タッチ中の状態を管理
+const isTouching = ref(false);
+
+const setUpTouchListeners = () => {
+    const container = scrollContainer.value;
+    if (!container) return;
+
+    container.addEventListener("touchmove", () => {
+        isTouching.value = true;
+    });
+    
+    container.addEventListener("touchstart", () => {
+        isTouching.value = true;
+    });
+
+    container.addEventListener("pointerdown", () => {
+        isTouching.value = true;
+    });
+
+    container.addEventListener("touchend", () => {
+        isTouching.value = false;
+
+        // 指が離れた後にトップに戻る
+        setTimeout(() => {
+            if(StageTriggerFlg.value){
+                container.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }, 0);
+    });
+};
+
 
 let stagePanelObserver: IntersectionObserver, anomalyTriggerObserver: IntersectionObserver, anomalyPanelObserver: IntersectionObserver, stageTriggerObserver: IntersectionObserver;
 
@@ -132,19 +171,14 @@ const setUpObservers = () => {
                 if (AnomalyExistFlg.value) {
                     // 次のステージをステージナンバー0で作成
                     spnStore.reset();
-
-                    // スクロール(画面)トップに戻る
-                    // window.scrollTo(0, 0);
-                    scrollContainer.value.scrollIntoView();
                 } else {
                     // 異変無しで通過する場合、ステージナンバーをインクリメントして作成
                     spnStore.add();
                     spnStore.addIncrement();
-
-                    // スクロール(画面)トップに戻る
-                    // window.scrollTo(0, 0);
-                    scrollContainer.value.scrollIntoView();
                 }
+
+                // スクロール(画面)トップに戻る
+                scrollContainer.value.scrollIntoView({ block: "start" });
             }
         });
     }, stageTriggerOptions);
@@ -153,7 +187,9 @@ const setUpObservers = () => {
 };
 
 onMounted(() => {
+    screenHeight.value = window.screen.height;
     spnStore.init();
+    setUpTouchListeners();
     setUpObservers();
 });
 
@@ -203,4 +239,10 @@ onBeforeUnmount(() => {
     z-index: 1000;
     font-family: Arial, sans-serif;
 }
+
+.blank-container {
+  background-color: #ff0000;
+  /* 初期のスタイル */
+}
+
 </style>
