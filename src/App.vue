@@ -1,11 +1,29 @@
 <template>
   <v-app>
-    <v-app-bar app dense color="primary">
+
+    <v-app-bar app height="145" color="#102E5D">
       <v-toolbar-title>Sub Navbar</v-toolbar-title>
-      <v-btn>Home</v-btn>
-      <v-btn>Features</v-btn>
-      <v-btn>About</v-btn>
+      <div class="d-none d-md-flex">
+        <v-btn class="btn-style">自己紹介</v-btn>
+        <v-btn class="btn-style">仕事</v-btn>
+        <v-btn class="btn-style">趣味</v-btn>
+        <v-btn class="btn-style">好きなこと</v-btn>
+        <v-btn class="btn-style">連絡</v-btn>
+      </div>
+      <v-app-bar-nav-icon class="d-md-none" @click="drawer = !drawer">
+        <v-icon>mdi-menu</v-icon>
+      </v-app-bar-nav-icon>
     </v-app-bar>
+
+    <v-navigation-drawer v-model="drawer" temporary right>
+      <v-list>
+        <v-list-item @click="drawer = false">自己紹介</v-list-item>
+        <v-list-item @click="drawer = false">仕事</v-list-item>
+        <v-list-item @click="drawer = false">趣味</v-list-item>
+        <v-list-item @click="drawer = false">好きなこと</v-list-item>
+        <v-list-item @click="drawer = false">連絡</v-list-item>
+      </v-list>
+    </v-navigation-drawer>
 
     <v-main>
       <div class="position-relative">
@@ -14,12 +32,12 @@
           <h1>OVER 20 HEALTHIER FLEXITARIAN ENTRÉES</h1>
           <p>YOUR TASTE BUDS WILL THINK IT’S A CHEAT DAY</p>
           <div class="pad-12"></div>
-          <v-btn>FLEXITARIAN OPTIONS</v-btn>
+          <v-btn variant="flat">FLEXITARIAN OPTIONS</v-btn>
         </div>
       </div>
 
 
-      <v-container>
+      <v-container fluid>
         <v-row>
           <v-col cols="12" md="6">
             <v-row class="d-flex flex-column center-content">
@@ -74,7 +92,8 @@
           <v-col cols="12" md="4" order="2" order-md="1" class="center-content">
             <div class="content-wrapper">
               <h1>A FRESH TAKE ON AN AMERICAN CLASSIC</h1>
-              <p>Co-founder and Executive Chef, Ype Von Hengst, has created a menu featuring classic American favorites
+              <p>Co-founder and Executive Chef, Ype Von Hengst, has created a menu featuring classic American
+                favorites
                 with a contemporary twist for today’s lifestyles.</p>
               <div class="pad-12"></div>
               <v-btn>FOOD PHILOSOPHY</v-btn>
@@ -92,7 +111,8 @@
           <v-col class="center-content" cols="12" md="4" order="2" order-md="2">
             <div class="content-wrapper">
               <h1>A HOME AWAY FROM HOME</h1>
-              <p>“Silver Diner is venue for friendships and a place where, settled in a perfect booth, we all belong” –
+              <p>“Silver Diner is venue for friendships and a place where, settled in a perfect booth, we all belong”
+                –
                 Silver Diner Fan for 25 years</p>
               <div class="pad-12"></div>
               <v-btn>Community Gathering Place</v-btn>
@@ -129,9 +149,11 @@
 
     <!-- <StageSet /> -->
   </v-app>
+
 </template>
 
 <script setup lang="ts">
+import { ref } from "vue";
 import StageSet from "@/components/Anomaly/StageSet.vue";
 import hummusJpg from "@/assets/Anomaly/jpg/Hummus_2500x1660.jpg";
 import melanieJpg from "@/assets/Anomaly/jpg/Melanie.jpg";
@@ -141,9 +163,18 @@ import hospitalityJpg from "@/assets/Anomaly/jpg/Hospitality_2500x1660.jpg";
 import jukeboxJpg from "@/assets/Anomaly/jpg/Jukebox.jpg";
 
 
+const drawer = ref(false);
+
+
 </script>
 
 <style scoped>
+.btn-style {
+  font-size: 19px;
+  font-family: brandon-grotesque;
+  font-weight: 700;
+}
+
 .position-relative {
   position: relative;
   /* 子要素の absolute を有効にする */
@@ -151,13 +182,11 @@ import jukeboxJpg from "@/assets/Anomaly/jpg/Jukebox.jpg";
 
 .overlay-content {
   position: absolute;
-  bottom: 20px;
-  /* 下からの距離 */
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  /* 中央寄せ */
+  transform: translate(-50%, -50%);
   text-align: center;
-  /* テキストを中央揃え */
+  color: white;
 }
 
 .hummus-img {
